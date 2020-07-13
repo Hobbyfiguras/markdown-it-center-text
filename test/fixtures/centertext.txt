@@ -5,40 +5,40 @@ s
 .
 
 .
-some ->centered text<- in a paragraph
+some -!justified text!- in a paragraph
 .
-<p>some <div class="text-align-center">centered text</div> in a paragraph</p>
-.
-
-.
-bold and ->**centered text**<- in a paragraph
-.
-<p>bold and <div class="text-align-center"><strong>centered text</strong></div> in a paragraph</p>
+<p>some <div class="text-justify">justified text</div> in a paragraph</p>
 .
 
 .
-bold and **->centered text<-** in a paragraph
+bold and -!**justified text**!- in a paragraph
 .
-<p>bold and <strong><div class="text-align-center">centered text</div></strong> in a paragraph</p>
+<p>bold and <div class="text-justify"><strong>justified text</strong></div> in a paragraph</p>
+.
+
+.
+bold and **-!justified text!-** in a paragraph
+.
+<p>bold and <strong><div class="text-justify">justified text</div></strong> in a paragraph</p>
 .
 
 
 .
-clearly not a ->centered text definition
+clearly not a -!justified text definition
 .
-<p>clearly not a -&gt;centered text definition</p>
-.
-
-.
-more text that is not centered<-
-.
-<p>more text that is not centered&lt;-</p>
+<p>clearly not a -!justified text definition</p>
 .
 
 .
-## ->Centered heading<-
+more text that is not justified!-
 .
-<h2><div class="text-align-center">Centered heading</div></h2>
+<p>more text that is not justified!-</p>
+.
+
+.
+## -!Justified heading!-
+.
+<h2><div class="text-justify">Justified heading</div></h2>
 .
 
 coverage

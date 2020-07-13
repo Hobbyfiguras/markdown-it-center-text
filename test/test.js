@@ -5,7 +5,7 @@ var generate = require('markdown-it-testgen');
 
 /*eslint-env mocha*/
 
-describe('markdown-it-centertext', function () {
+describe('markdown-it-justifytext', function () {
   var md = require('markdown-it')()
               .use(require('../'));
 

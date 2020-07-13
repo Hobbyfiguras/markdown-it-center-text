@@ -1,8 +1,11 @@
-/*! markdown-it-center-text 1.0.4 https://github.com/jay-hodgson/markdown-it-center-text @license MIT */(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.markdownitCentertext = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*! markdown-it-justify-text 1.0.4 https://github.com/jay-hodgson/markdown-it-justify-text @license MIT */(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.markdownitjustifytext = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 // Process -> center text <-
 
 'use strict';
 
+var DASH_CODE = 45
+var START_CODE = 33 /* ! */
+var END_CODE = 33
 module.exports = function centertext_plugin(md) {
 
   function tokenize(state, silent) {
@@ -13,12 +16,12 @@ module.exports = function centertext_plugin(md) {
     if (start + 1 > max) { return false; }
     if (silent) { return false; } // don't run any pairs in validation mode
 
-    if (marker === 45/* - */ &&
-      state.src.charCodeAt(start + 1) === 62/* > */
+    if (marker === DASH_CODE/* - */ &&
+      state.src.charCodeAt(start + 1) === START_CODE/* > */
       ) {
       state.scanDelims(state.pos, true);
       token         = state.push('text', '', 0);
-      token.content = '->';
+      token.content = '-!';
       state.delimiters.push({
         marker: token.content,
         jump:   0,
@@ -28,13 +31,13 @@ module.exports = function centertext_plugin(md) {
         open:   true,
         close:  false
       });
-    } else if (marker === 60/* < */ &&
-      state.src.charCodeAt(start + 1) === 45/* - */
+    } else if (marker === END_CODE/* < */ &&
+      state.src.charCodeAt(start + 1) === DASH_CODE/* - */
       ) {
       // found the close marker
       state.scanDelims(state.pos, true);
       token         = state.push('text', '', 0);
-      token.content = '<-';
+      token.content = '!-';
       state.delimiters.push({
         marker: token.content,
         jump:   0,
@@ -68,9 +71,9 @@ module.exports = function centertext_plugin(md) {
 
     for (i = 0; i < max; i++) {
       delim = delimiters[i];
-      if (delim.marker === '->') {
+      if (delim.marker === '-!') {
         foundStart = true;
-      } else if (delim.marker === '<-') {
+      } else if (delim.marker === '!-') {
         foundEnd = true;
       }
     }
@@ -78,22 +81,22 @@ module.exports = function centertext_plugin(md) {
       for (i = 0; i < max; i++) {
         delim = delimiters[i];
 
-        if (delim.marker === '->') {
+        if (delim.marker === '-!') {
           foundStart = true;
           token         = state.tokens[delim.token];
-          token.type    = 'centertext_open';
+          token.type    = 'justifytext_open';
           token.tag     = 'div';
           token.nesting = 1;
-          token.markup  = '->';
+          token.markup  = '-!';
           token.content = '';
-          token.attrs = [ [ 'class', 'text-align-center' ] ];
-        } else if (delim.marker === '<-') {
+          token.attrs = [ [ 'class', 'text-justify' ] ];
+        } else if (delim.marker === '!-') {
           if (foundStart) {
             token         = state.tokens[delim.token];
-            token.type    = 'centertext_close';
+            token.type    = 'justifytext_close';
             token.tag     = 'div';
             token.nesting = -1;
-            token.markup  = '<-';
+            token.markup  = '!-';
             token.content = '';
           }
         }
@@ -101,8 +104,8 @@ module.exports = function centertext_plugin(md) {
     }
   }
 
-  md.inline.ruler.before('emphasis', 'centertext', tokenize);
-  md.inline.ruler2.before('emphasis', 'centertext', postProcess);
+  md.inline.ruler.before('emphasis', 'justifytext', tokenize);
+  md.inline.ruler2.before('emphasis', 'justifytext', postProcess);
 };
 
 },{}]},{},[1])(1)

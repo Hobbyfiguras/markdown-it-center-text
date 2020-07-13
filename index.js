@@ -2,6 +2,9 @@
 
 'use strict';
 
+var DASH_CODE = 45
+var START_CODE = 33 /* ! */
+var END_CODE = 33
 module.exports = function centertext_plugin(md) {
 
   function tokenize(state, silent) {
@@ -12,12 +15,12 @@ module.exports = function centertext_plugin(md) {
     if (start + 1 > max) { return false; }
     if (silent) { return false; } // don't run any pairs in validation mode
 
-    if (marker === 45/* - */ &&
-      state.src.charCodeAt(start + 1) === 62/* > */
+    if (marker === DASH_CODE/* - */ &&
+      state.src.charCodeAt(start + 1) === START_CODE/* > */
       ) {
       state.scanDelims(state.pos, true);
       token         = state.push('text', '', 0);
-      token.content = '->';
+      token.content = '-!';
       state.delimiters.push({
         marker: token.content,
         jump:   0,
@@ -27,13 +30,13 @@ module.exports = function centertext_plugin(md) {
         open:   true,
         close:  false
       });
-    } else if (marker === 60/* < */ &&
-      state.src.charCodeAt(start + 1) === 45/* - */
+    } else if (marker === END_CODE/* < */ &&
+      state.src.charCodeAt(start + 1) === DASH_CODE/* - */
       ) {
       // found the close marker
       state.scanDelims(state.pos, true);
       token         = state.push('text', '', 0);
-      token.content = '<-';
+      token.content = '!-';
       state.delimiters.push({
         marker: token.content,
         jump:   0,
@@ -67,9 +70,9 @@ module.exports = function centertext_plugin(md) {
 
     for (i = 0; i < max; i++) {
       delim = delimiters[i];
-      if (delim.marker === '->') {
+      if (delim.marker === '-!') {
         foundStart = true;
-      } else if (delim.marker === '<-') {
+      } else if (delim.marker === '!-') {
         foundEnd = true;
       }
     }
@@ -77,22 +80,22 @@ module.exports = function centertext_plugin(md) {
       for (i = 0; i < max; i++) {
         delim = delimiters[i];
 
-        if (delim.marker === '->') {
+        if (delim.marker === '-!') {
           foundStart = true;
           token         = state.tokens[delim.token];
-          token.type    = 'centertext_open';
+          token.type    = 'justifytext_open';
           token.tag     = 'div';
           token.nesting = 1;
-          token.markup  = '->';
+          token.markup  = '-!';
           token.content = '';
-          token.attrs = [ [ 'class', 'text-align-center' ] ];
-        } else if (delim.marker === '<-') {
+          token.attrs = [ [ 'class', 'text-justify' ] ];
+        } else if (delim.marker === '!-') {
           if (foundStart) {
             token         = state.tokens[delim.token];
-            token.type    = 'centertext_close';
+            token.type    = 'justifytext_close';
             token.tag     = 'div';
             token.nesting = -1;
-            token.markup  = '<-';
+            token.markup  = '!-';
             token.content = '';
           }
         }
@@ -100,6 +103,6 @@ module.exports = function centertext_plugin(md) {
     }
   }
 
-  md.inline.ruler.before('emphasis', 'centertext', tokenize);
-  md.inline.ruler2.before('emphasis', 'centertext', postProcess);
+  md.inline.ruler.before('emphasis', 'justifytext', tokenize);
+  md.inline.ruler2.before('emphasis', 'justifytext', postProcess);
 };
